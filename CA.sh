@@ -72,11 +72,12 @@ esac
 CFGFILE=${2:-/etc/openssl.cnf}
 DIR=$(awk -F '=' '/^dir/ {print $2}' | awk '{print $1}')
 
-CATOP=
-CAKEY=
-CAREQ=
-CACERT=
-DAYS=
+# FIXME: Esto hay que mejorarlo
+CATOP=$(awk '/^dir/ {print $3}' /etc/ssl/openssl.cnf | head -1)
+CAKEY=${CATOP}/cakey.pem
+CAREQ=${CATOP}/careq.pem
+CACERT=${CACERT}/cacert.pem
+DAYS=3650
 CADAYS=${DAYS}
 
 # if [ -z "$CATOP" ] ; then CATOP=./demoCA ; fi
