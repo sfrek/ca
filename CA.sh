@@ -12,6 +12,7 @@
 # and the other the certificate) and cat them together and that is what
 # you want/need ... I'll make even this a little cleaner later.
 #
+# 02-Jul-2013 figarcia	configuratión via file ( no default /etc/openssl.cnf )
 #
 # 12-Jan-96 tjh    Added more things ... including CA -signcert which
 #                  converts a certificate to a request and then signs it.
@@ -55,23 +56,44 @@ cp_pem() {
 }
 
 usage() {
- echo "usage: $0 -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify" >&2
+ echo "usage: $0 -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify cfg_file" >&2
 }
+
+case $1 in
+	-newcert|-newreq|-newreq-nodes|-newca|-sign|-verify)
+		;;
+	*)
+		echo "Error:"
+		usage
+		exit 2
+		;;
+esac
+
+CFGFILE=${2:-/etc/openssl.cnf}
+DIR=$(awk -F '=' '/^dir/ {print $2}' | awk '{print $1}')
+
+CATOP=
+CAKEY=
+CAREQ=
+CACERT=
+DAYS=
+CADAYS=${DAYS}
+
+# if [ -z "$CATOP" ] ; then CATOP=./demoCA ; fi
+# CAKEY=./cakey.pem
+# CAREQ=./careq.pem
+# CACERT=./cacert.pem
+
+# if [ -z "$DAYS" ] ; then DAYS="-days 365" ; fi	# 1 year
+# CADAYS="-days 1095"	# 3 years
 
 if [ -z "$OPENSSL" ]; then OPENSSL=openssl; fi
 
-if [ -z "$DAYS" ] ; then DAYS="-days 365" ; fi	# 1 year
-CADAYS="-days 1095"	# 3 years
-REQ="$OPENSSL req $SSLEAY_CONFIG"
-CA="$OPENSSL ca $SSLEAY_CONFIG"
+REQ="$OPENSSL req $SSLEAY_CONFIG -config ${CFGFILE}"
+CA="$OPENSSL ca $SSLEAY_CONFIG  -config ${CFGFILE}"
 VERIFY="$OPENSSL verify"
 X509="$OPENSSL x509"
 PKCS12="openssl pkcs12"
-
-if [ -z "$CATOP" ] ; then CATOP=./demoCA ; fi
-CAKEY=./cakey.pem
-CAREQ=./careq.pem
-CACERT=./cacert.pem
 
 RET=0
 
