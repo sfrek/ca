@@ -70,7 +70,7 @@ case $1 in
 esac
 
 CFGFILE=${2:-/etc/openssl.cnf}
-DIR=$(awk -F '=' '/^dir/ {print $2}' | awk '{print $1}')
+DIR=$(awk -F '=' '/^dir/ {print $2}' ${CFGFILE} | awk '{print $1}')
 
 # FIXME: Esto hay que mejorarlo
 CATOP=$(awk '/^dir/ {print $3}' ${CFGFILE} | head -1)
